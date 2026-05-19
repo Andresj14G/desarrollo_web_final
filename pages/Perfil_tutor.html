@@ -90,7 +90,7 @@
             <div class="booking-price" id="pPrecio"></div>
             <h6 class="fw-600 mt-3 mb-2">Horarios Disponibles</h6>
             <div id="scheduleContainer"></div>
-            <a href="reserva.html" class="btn btn-success w-100 mt-3 py-2 rounded-pill">Reservar clase</a>
+            <a href="reserva.html" id="btnReservar" class="btn btn-success w-100 mt-3 py-2 rounded-pill">Reservar clase</a>
             <p class="text-center text-muted small mt-2" id="bookingHint">Seleccione un horario para continuar</p>
           </div>
         </div>
@@ -205,7 +205,7 @@
     const horarios = perfil.horarios || {};
     const elH = document.getElementById('pHorarios');
     const sc  = document.getElementById('scheduleContainer');
-    const btnReservar = document.querySelector('a[href="reserva.html"]');
+    const btnReservar = document.getElementById('btnReservar');
     const hint = document.getElementById('bookingHint');
 
     const diasConSlots = Object.entries(horarios).filter(([, s]) => s && s.length > 0);

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil del Tutor | Tutores On-Line</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles/estilos.css" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="../index.html">
+        <img src="../assets/images/logo/Logo.png" alt="Tutores On-Line" style="height:42px;width:auto;" />
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <i class="bi bi-list fs-2 text-secondary"></i>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav align-items-center gap-lg-2 mt-3 mt-lg-0">
+          <li class="nav-item"><a class="nav-link fw-500" href="../index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link fw-500" href="Buscar_tutor.html">Buscar profesor</a></li>
+          <li class="nav-item"><a class="btn btn-outline-success rounded-pill px-3" href="login.html">Iniciar sesión</a></li>
+          <li class="nav-item"><a class="btn btn-success rounded-pill px-3 text-white" href="registro.html">Registrarse</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="py-4">
+    <div class="container">
+      <a href="Buscar_tutor.html" class="back-link mb-4 d-inline-flex align-items-center gap-2">
+        <i class="bi bi-arrow-left"></i> Volver a búsqueda
+      </a>
+
+      <div id="sinPerfil" style="display:none;" class="alert alert-warning mt-3">
+        No se encontró información de este profesor.
+        <a href="Buscar_tutor.html" class="alert-link ms-2">Volver al buscador</a>
+      </div>
+
+      <div class="row g-4" id="contenidoPerfil">
+        <!-- LEFT: Info -->
+        <div class="col-lg-7">
+          <!-- Header Card -->
+          <div class="profile-card mb-4">
+            <div class="d-flex gap-3 align-items-center">
+              <img id="pAvatar"
+                   src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='40' fill='%23e0e0e0'/%3E%3Ccircle cx='40' cy='30' r='14' fill='%23bdbdbd'/%3E%3Cellipse cx='40' cy='64' rx='23' ry='16' fill='%23bdbdbd'/%3E%3C/svg%3E"
+                   class="profile-avatar" alt="Avatar" style="object-fit:cover;" />
+              <div>
+                <h3 class="profile-name" id="pNombre"></h3>
+                <p class="profile-specialty" id="pEspecialidad"></p>
+                <div class="d-flex align-items-center gap-1">
+                  <span class="text-warning">⭐</span>
+                  <span class="fw-600">5.0</span>
+                  <span class="text-muted small">(Profesor nuevo)</span>
+                </div>
+                <div class="d-flex gap-3 mt-1">
+                  <span class="profile-meta"><i class="bi bi-geo-alt text-secondary"></i> Colombia</span>
+                  <span class="profile-meta"><i class="bi bi-camera-video text-secondary"></i> Virtual / Presencial</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Materias -->
+          <div class="profile-card mb-4">
+            <h5 class="profile-section-title">Materias</h5>
+            <div class="d-flex flex-wrap gap-2 mt-2" id="pMaterias"></div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="profile-card mb-4">
+            <h5 class="profile-section-title">Descripción</h5>
+            <p class="text-muted" id="pDescripcion"></p>
+          </div>
+
+          <!-- Horarios -->
+          <div class="profile-card mb-4">
+            <h5 class="profile-section-title">Horarios disponibles</h5>
+            <div id="pHorarios" class="text-muted" style="font-size:.9rem;line-height:2;"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Booking -->
+        <div class="col-lg-5">
+          <div class="booking-card sticky-top" style="top:80px;">
+            <div class="booking-price" id="pPrecio"></div>
+            <h6 class="fw-600 mt-3 mb-2">Horarios Disponibles</h6>
+            <div id="scheduleContainer"></div>
+            <a href="reserva.html" class="btn btn-success w-100 mt-3 py-2 rounded-pill">Reservar clase</a>
+            <p class="text-center text-muted small mt-2" id="bookingHint">Seleccione un horario para continuar</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer-section py-5 mt-5">
+    <div class="container">
+      <hr class="footer-hr" />
+      <p class="footer-copy text-center mb-0">@ 2026 Tutores On-Line, ¡Aprende con los mejores!</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/app.js"></script>
+  <script src="../assets/api.js"></script>
+  <script>
+  (async function cargarPerfilDinamico() {
+    const params  = new URLSearchParams(window.location.search);
+    const idParam = params.get('id');
+
+    const SUPABASE_URL = 'https://dzrgyxqzacnhqbkkdskj.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_YmqZU6pgjkLVCLZONTKD2Q_9rfcSAgP';
+    const PLACEHOLDER  = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='40' fill='%23e0e0e0'/%3E%3C/svg%3E";
+
+    let perfil = null;
+
+    // ── Caso 1: id = "db_XXX" → profesor registrado en Supabase
+    if (idParam && idParam.startsWith('db_')) {
+      const usuarioId = idParam.replace('db_', '');
+      try {
+        const res = await fetch(
+          `${SUPABASE_URL}/rest/v1/perfiles_profesores?usuario_id=eq.${usuarioId}&select=*`,
+          { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
+        );
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const d = data[0];
+          perfil = {
+            nombre:      d.nombre,
+            materias:    d.materias ? d.materias.split(',').map(m => m.trim()).filter(Boolean) : [],
+            precio:      parseInt(d.precio) || 25000,
+            descripcion: d.descripcion || '',
+            foto:        d.foto || PLACEHOLDER,
+            horarios:    d.horarios ? JSON.parse(d.horarios) : {},
+            rating:      parseFloat(d.rating) || 5.0,
+            reviews:     parseInt(d.resenas) || 0
+          };
+        }
+      } catch(e) { console.warn('Error cargando perfil de Supabase', e); }
+    }
+
+    // ── Caso 2: id = número → tutor hardcodeado del array "tutores" en app.js
+    if (!perfil && idParam && !idParam.startsWith('db_')) {
+      const numId = parseInt(idParam);
+      const t = typeof tutores !== 'undefined' && tutores.find(x => x.id === numId);
+      if (t) {
+        perfil = {
+          nombre:      t.name,
+          materias:    t.specialty.split(/[,y&]+/).map(m => m.trim()).filter(Boolean),
+          precio:      t.price,
+          descripcion: t.descripcion || `Profesor especializado en ${t.specialty} con ${t.reviews} reseñas y calificación ${t.rating}.`,
+          foto:        t.avatar,
+          horarios:    t.horarios || {},
+          rating:      t.rating,
+          reviews:     t.reviews
+        };
+      }
+    }
+
+    // ── Sin perfil → mostrar error
+    if (!perfil) {
+      document.getElementById('sinPerfil').style.display = 'block';
+      document.getElementById('contenidoPerfil').style.display = 'none';
+      return;
+    }
+
+    // ── Renderizar
+    if (perfil.foto) document.getElementById('pAvatar').src = perfil.foto;
+
+    document.getElementById('pNombre').textContent = perfil.nombre;
+    document.title = `${perfil.nombre} | Tutores On-Line`;
+
+    const materias = perfil.materias || [];
+    const esp = materias.length > 1
+      ? `${materias[0]} y ${materias.length - 1} materia${materias.length > 2 ? 's' : ''} más`
+      : (materias[0] || 'Docente');
+    document.getElementById('pEspecialidad').textContent = esp;
+
+    // Rating
+    const rEl = document.querySelector('.fw-600');
+    if (rEl) rEl.textContent = perfil.rating;
+    const rvEl = document.querySelector('.text-muted.small');
+    if (rvEl) rvEl.textContent = perfil.reviews > 0 ? `(${perfil.reviews} reseñas)` : '(Profesor nuevo)';
+
+    // Materias tags
+    const elMat = document.getElementById('pMaterias');
+    elMat.innerHTML = materias.length > 0
+      ? materias.map(m => `<span class="subject-tag">${m}</span>`).join('')
+      : '<span class="text-muted">Sin materias registradas.</span>';
+
+    // Descripción
+    document.getElementById('pDescripcion').textContent =
+      perfil.descripcion || 'Este profesor aún no ha agregado una descripción.';
+
+    // Precio
+    document.getElementById('pPrecio').innerHTML =
+      `$${perfil.precio.toLocaleString('es-CO')} <span>por hora</span>`;
+
+    // ── Horarios ──
+    const horarios = perfil.horarios || {};
+    const elH = document.getElementById('pHorarios');
+    const sc  = document.getElementById('scheduleContainer');
+    const btnReservar = document.querySelector('a[href="reserva.html"]');
+    const hint = document.getElementById('bookingHint');
+
+    const diasConSlots = Object.entries(horarios).filter(([, s]) => s && s.length > 0);
+    const tieneHorarios = diasConSlots.length > 0;
+
+    // Panel izquierdo: resumen de horarios
+    if (tieneHorarios) {
+      elH.innerHTML = diasConSlots.map(([dia, slots]) =>
+        `<div style="margin-bottom:6px;"><b>${dia}:</b> ${slots.map(s =>
+          `<span class="badge bg-light text-dark border me-1">${s.from}–${s.to}</span>`
+        ).join('')}</div>`
+      ).join('');
+    } else {
+      elH.innerHTML = '<p class="text-muted">Este profesor aún no ha configurado horarios. Puedes contactarlo directamente.</p>';
+    }
+
+    // Panel derecho: slots seleccionables por día
+    if (sc) {
+      if (tieneHorarios) {
+        let selectedSlotPerfil = null;
+        sc.innerHTML = diasConSlots.map(([dia, slots]) => `
+          <div style="margin-bottom:10px;">
+            <p style="font-size:.82rem;font-weight:600;color:#555;margin-bottom:5px;">${dia}</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              ${slots.map(s => {
+                // Generar slots de 1h dentro del rango from–to
+                const horasSlot = [];
+                const [fh, fm] = s.from.split(':').map(Number);
+                const [th, tm] = s.to.split(':').map(Number);
+                let cur = fh * 60 + fm;
+                const end = th * 60 + tm;
+                while (cur + 60 <= end) {
+                  const hh = String(Math.floor(cur/60)).padStart(2,'0');
+                  const mm = String(cur%60).padStart(2,'0');
+                  horasSlot.push(`${hh}:${mm}`);
+                  cur += 60;
+                }
+                return horasSlot.map(h =>
+                  `<button class="time-slot-btn" data-dia="${dia}" data-hora="${h}"
+                    onclick="(function(btn){
+                      document.querySelectorAll('.time-slot-btn').forEach(b=>b.classList.remove('selected'));
+                      btn.classList.add('selected');
+                      document.getElementById('bookingHint').textContent='✅ Seleccionado: ${dia} '+btn.dataset.hora;
+                    })(this)">${h}</button>`
+                ).join('');
+              }).join('')}
+            </div>
+          </div>`
+        ).join('');
+      } else {
+        sc.innerHTML = '<p class="text-muted text-center small py-3"><i class="bi bi-calendar-x me-1"></i>Sin horarios disponibles aún.</p>';
+      }
+    }
+
+    // Botón reservar — deshabilitar si no hay horarios
+    if (btnReservar) {
+      if (tieneHorarios) {
+        btnReservar.href = `reserva.html?tutor=${idParam}`;
+      } else {
+        btnReservar.removeAttribute('href');
+        btnReservar.style.cssText = 'opacity:.5;cursor:not-allowed;pointer-events:none;';
+        if (hint) hint.textContent = 'Este tutor no tiene horarios disponibles aún';
+      }
+    }
+  })();
+  </script>
+</body>
+</html>

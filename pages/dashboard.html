@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Tutor | Tutores On-Line</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles/estilos.css" />
+</head>
+<body>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="../index.html">
+        <img src="../assets/images/logo/Logo.png" alt="Tutores On-Line" style="height: 42px; width: auto;" />
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <i class="bi bi-list fs-2 text-secondary"></i>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <!-- Solo "Inicio" — Buscar profesor se oculta para profesores via api.js -->
+        <ul class="navbar-nav align-items-center gap-lg-2 mt-3 mt-lg-0">
+          <li class="nav-item"><a class="nav-link fw-500" href="../index.html">Inicio</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ BARRA TÍTULO + USUARIO ══ -->
+  <div class="dash-topbar">
+    <p class="dash-topbar-title">Dashboard Tutor</p>
+    <div class="dash-user">
+      <div class="dash-user-info">
+        <span class="dash-user-name" id="dashNombre">Cargando...</span>
+        <span class="dash-user-sub">Tutor verificado</span>
+      </div>
+      <!-- Avatar: muestra placeholder hasta que el usuario suba foto -->
+      <div id="dashAvatarWrap" style="position:relative;cursor:pointer;" title="Clic para cambiar foto">
+        <img id="dashAvatar"
+             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Ccircle cx='22' cy='22' r='22' fill='%23e0e0e0'/%3E%3Ccircle cx='22' cy='17' r='8' fill='%23bdbdbd'/%3E%3Cellipse cx='22' cy='36' rx='13' ry='9' fill='%23bdbdbd'/%3E%3C/svg%3E"
+             alt="Avatar" class="dash-avatar"
+             style="object-fit:cover;" />
+        <input type="file" id="avatarInput" accept="image/*" style="display:none;" />
+        <div style="position:absolute;bottom:0;right:0;background:#198754;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;">
+          <i class="bi bi-pencil-fill" style="font-size:8px;color:#fff;"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LAYOUT ══ -->
+  <div class="dash-wrapper">
+    <aside class="dash-sidebar">
+      <ul class="sidebar-menu">
+        <li><a href="#" class="active" onclick="return showSection('disponibilidad', this)"><i class="bi bi-calendar2-week"></i><span>Mi disponibilidad</span></a></li>
+        <li><a href="#" onclick="return showSection('miperfil', this)"><i class="bi bi-person-badge"></i><span>Mi perfil público</span></a></li>
+        <li><a href="#" onclick="return showSection('solicitudes', this)"><i class="bi bi-bell"></i><span>Solicitudes pendientes</span></a></li>
+        <li><a href="#" onclick="return showSection('proximas', this)"><i class="bi bi-clock"></i><span>Sesiones próximas</span></a></li>
+        <li><a href="#" onclick="return showSection('historial', this)"><i class="bi bi-clock-history"></i><span>Historial</span></a></li>
+        <li><a href="#" onclick="return showSection('reputacion', this)"><i class="bi bi-star"></i><span>Reputación</span></a></li>
+      </ul>
+    </aside>
+
+    <main class="dash-main">
+
+      <!-- MI DISPONIBILIDAD -->
+      <div id="section-disponibilidad">
+        <div class="sec-header">
+          <div><h5>Mi Disponibilidad</h5><p>Gestiona tus horarios disponibles para tutorías</p></div>
+          <button class="btn-add" data-bs-toggle="modal" data-bs-target="#modalHorario">Agregar Horarios</button>
+        </div>
+        <div class="cards-wrap" id="availabilityContainer"></div>
+      </div>
+
+      <!-- MI PERFIL PÚBLICO -->
+      <div id="section-miperfil" class="d-none other-sec">
+        <h5>Mi perfil público</h5>
+        <p class="text-muted mb-4" style="font-size:14px;">Así te verán los estudiantes en el buscador.</p>
+
+        <div class="row g-4" style="max-width:900px;">
+          <!-- Columna izquierda: formulario de edición -->
+          <div class="col-lg-5">
+            <div style="background:#fff;border:1.5px solid #dee2e6;border-radius:16px;padding:24px;">
+              <h6 class="fw-bold mb-3">✏️ Editar perfil</h6>
+
+              <!-- Foto -->
+              <div class="text-center mb-3">
+                <img id="perfilFoto"
+                     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='40' fill='%23e0e0e0'/%3E%3Ccircle cx='40' cy='30' r='14' fill='%23bdbdbd'/%3E%3Cellipse cx='40' cy='64' rx='23' ry='16' fill='%23bdbdbd'/%3E%3C/svg%3E"
+                     style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #198754;" alt="Foto perfil" />
+                <div class="mt-2">
+                  <label style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;background:#198754;color:#fff;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:500;">
+                    <i class="bi bi-camera"></i> Cambiar foto
+                    <input type="file" id="perfilFotoInput" accept="image/*" style="display:none;" />
+                  </label>
+                </div>
+              </div>
+
+              <!-- Materias -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold" style="font-size:13px;">Materias (separadas por coma)</label>
+                <input type="text" id="editMaterias" class="form-control form-control-sm"
+                       placeholder="Ej: Matemáticas, Física, Cálculo" />
+              </div>
+
+              <!-- Precio -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold" style="font-size:13px;">Tarifa por hora ($)</label>
+                <input type="number" id="editPrecio" class="form-control form-control-sm"
+                       placeholder="Ej: 25000" min="0" />
+              </div>
+
+              <!-- Descripción -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold" style="font-size:13px;">Descripción</label>
+                <textarea id="editDescripcion" class="form-control form-control-sm" rows="3"
+                          placeholder="Cuéntales a los estudiantes sobre ti..."></textarea>
+              </div>
+
+              <div id="perfilGuardadoMsg" style="display:none;"></div>
+
+              <button onclick="guardarPerfilPublico()" class="btn btn-success w-100 rounded-pill" style="font-size:14px;">
+                <i class="bi bi-cloud-check me-1"></i> Guardar cambios
+              </button>
+            </div>
+          </div>
+
+          <!-- Columna derecha: vista previa -->
+          <div class="col-lg-7">
+            <div style="background:#fff;border:1.5px solid #dee2e6;border-radius:16px;padding:28px;">
+              <h6 class="fw-bold mb-3" style="color:#888;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">Vista previa</h6>
+
+              <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+                <img id="previewFoto"
+                     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='40' fill='%23e0e0e0'/%3E%3Ccircle cx='40' cy='30' r='14' fill='%23bdbdbd'/%3E%3Cellipse cx='40' cy='64' rx='23' ry='16' fill='%23bdbdbd'/%3E%3C/svg%3E"
+                     style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #198754;" />
+                <div>
+                  <p id="perfilNombre" style="font-weight:700;font-size:1.1rem;margin:0;"></p>
+                  <p id="perfilEspecialidad" style="color:#198754;font-size:.9rem;margin:4px 0 0;"></p>
+                  <span style="font-size:.82rem;color:#888;">⭐ 5.0 · Profesor nuevo</span>
+                </div>
+              </div>
+
+              <div style="margin-bottom:16px;">
+                <p style="font-weight:600;font-size:.88rem;color:#555;margin-bottom:8px;"><i class="bi bi-book me-1"></i>Materias</p>
+                <div id="perfilMaterias" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+                <p id="perfilSinMaterias" style="color:#aaa;font-size:.85rem;display:none;">No has seleccionado materias aún.</p>
+              </div>
+
+              <div style="margin-bottom:16px;">
+                <p style="font-weight:600;font-size:.88rem;color:#555;margin-bottom:4px;"><i class="bi bi-currency-dollar me-1"></i>Tarifa</p>
+                <p id="perfilPrecio" style="font-size:1.2rem;font-weight:700;color:#198754;margin:0;"></p>
+              </div>
+
+              <div style="margin-bottom:16px;">
+                <p style="font-weight:600;font-size:.88rem;color:#555;margin-bottom:4px;"><i class="bi bi-card-text me-1"></i>Descripción</p>
+                <p id="perfilDesc" style="color:#666;font-size:.9rem;margin:0;"></p>
+              </div>
+
+              <div>
+                <p style="font-weight:600;font-size:.88rem;color:#555;margin-bottom:8px;"><i class="bi bi-calendar2-week me-1"></i>Horarios configurados</p>
+                <div id="perfilHorarios" style="font-size:.85rem;color:#666;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SOLICITUDES -->
+      <div id="section-solicitudes" class="d-none other-sec">
+        <h5>Solicitudes pendientes</h5>
+        <div class="alert alert-info rounded-3 mb-0">No tienes solicitudes pendientes en este momento.</div>
+      </div>
+
+      <!-- SESIONES PRÓXIMAS -->
+      <div id="section-proximas" class="d-none other-sec">
+        <h5>Sesiones próximas</h5>
+        <div id="proximasContainer">
+          <div class="text-center py-4 text-muted">
+            <div class="spinner-border spinner-border-sm text-success me-2"></div> Cargando sesiones...
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORIAL -->
+      <div id="section-historial" class="d-none other-sec">
+        <h5>Historial de sesiones</h5>
+        <div id="historialContainer">
+          <div class="text-center py-4 text-muted">
+            <div class="spinner-border spinner-border-sm text-success me-2"></div> Cargando historial...
+          </div>
+        </div>
+      </div>
+
+      <!-- REPUTACIÓN -->
+      <div id="section-reputacion" class="d-none other-sec">
+        <h5>Reputación</h5>
+        <div class="row g-3">
+          <div class="col-6 col-lg-3"><div class="stat-card"><p class="stat-num">4.9</p><p class="stat-label">Calificación</p></div></div>
+          <div class="col-6 col-lg-3"><div class="stat-card"><p class="stat-num">2</p><p class="stat-label">Reseñas</p></div></div>
+          <div class="col-6 col-lg-3"><div class="stat-card"><p class="stat-num">20+</p><p class="stat-label">Estudiantes</p></div></div>
+          <div class="col-6 col-lg-3"><div class="stat-card"><p class="stat-num">98%</p><p class="stat-label">Satisfacción</p></div></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ══ MODAL AGREGAR HORARIO ══ -->
+  <div class="modal fade" id="modalHorario" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">Agregar Horario</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body pt-3">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Día</label>
+            <select class="form-select" id="addDay">
+              <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+              <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
+            </select>
+          </div>
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold">Desde</label>
+              <!-- type="text" con pattern para poder escribir libremente -->
+              <input type="text" class="form-control" id="addFrom" placeholder="09:00" maxlength="5" />
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Hasta</label>
+              <input type="text" class="form-control" id="addTo" placeholder="12:00" maxlength="5" />
+            </div>
+          </div>
+          <small class="text-muted">Formato 24h, ej: 09:00 · 14:30 · 18:00</small>
+        </div>
+        <div class="modal-footer border-0 pt-1">
+          <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-success rounded-pill px-4" onclick="addHorario()">Agregar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/app.js"></script>
+  <script src="../assets/api.js"></script>
+  <script>
+    /* ── Cargar nombre del usuario logueado ── */
+    (function() {
+      const u = localStorage.getItem('tutores_usuario');
+      if (u) {
+        const usuario = JSON.parse(u);
+        const el = document.getElementById('dashNombre');
+        if (el) el.textContent = usuario.nombre;
+      }
+    })();
+
+    /* ── Avatar ── */
+    const avatarWrap  = document.getElementById('dashAvatarWrap');
+    const avatarImg   = document.getElementById('dashAvatar');
+    const avatarInput = document.getElementById('avatarInput');
+
+    function sincronizarFoto(src) {
+      document.getElementById('dashAvatar').src = src;
+      ['perfilFoto','previewFoto'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.src = src;
+      });
+      localStorage.setItem('tutores_avatar', src);
+      // Guardar en el objeto perfil también
+      const perfil = JSON.parse(localStorage.getItem('tutores_perfil_profesor') || '{}');
+      perfil.foto = src;
+      localStorage.setItem('tutores_perfil_profesor', JSON.stringify(perfil));
+    }
+
+    const fotoGuardada = localStorage.getItem('tutores_avatar');
+    if (fotoGuardada) {
+      avatarImg.src = fotoGuardada;
+      ['perfilFoto','previewFoto'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.src = fotoGuardada;
+      });
+    }
+
+    avatarWrap.addEventListener('click', () => avatarInput.click());
+    avatarInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => sincronizarFoto(ev.target.result);
+      reader.readAsDataURL(file);
+    });
+    document.getElementById('perfilFotoInput')?.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => sincronizarFoto(ev.target.result);
+      reader.readAsDataURL(file);
+    });
+
+    /* ── Formateo HH:MM ── */
+    ['addFrom','addTo'].forEach(id => {
+      document.getElementById(id).addEventListener('input', function() {
+        let v = this.value.replace(/\D/g,'');
+        if (v.length >= 3) v = v.slice(0,2) + ':' + v.slice(2,4);
+        this.value = v;
+      });
+    });
+
+    /* ── CARGAR perfil desde Supabase al abrir la sección ── */
+    async function cargarPerfilPublico() {
+      const usuario = JSON.parse(localStorage.getItem('tutores_usuario') || '{}');
+      if (!usuario.id) return;
+
+      // Intentar cargar desde Supabase
+      let perfil = JSON.parse(localStorage.getItem('tutores_perfil_profesor') || '{}');
+
+      try {
+        const { ok, data } = await supabaseRequest(
+          `/perfiles_profesores?usuario_id=eq.${usuario.id}&select=*`,
+          { method: 'GET', prefer: '' }
+        );
+        if (ok && Array.isArray(data) && data.length > 0) {
+          const d = data[0];
+          perfil = {
+            nombre: usuario.nombre,
+            materias: d.materias ? d.materias.split(',').map(m => m.trim()).filter(Boolean) : [],
+            precio: d.precio || 25000,
+            descripcion: d.descripcion || '',
+            horarios: d.horarios ? JSON.parse(d.horarios) : {},
+            foto: d.foto || localStorage.getItem('tutores_avatar') || ''
+          };
+          localStorage.setItem('tutores_perfil_profesor', JSON.stringify(perfil));
+          if (perfil.foto) sincronizarFoto(perfil.foto);
+        }
+      } catch(e) { console.warn('Supabase no disponible, usando localStorage'); }
+
+      // Rellenar formulario de edición
+      document.getElementById('editMaterias').value = (perfil.materias || []).join(', ');
+      document.getElementById('editPrecio').value   = perfil.precio || 25000;
+      document.getElementById('editDescripcion').value = perfil.descripcion || '';
+
+      // Actualizar vista previa
+      actualizarVistaPreviaPerfil(perfil, usuario.nombre);
+    }
+
+    function actualizarVistaPreviaPerfil(perfil, nombre) {
+      const materias = perfil.materias || [];
+
+      // Nombre
+      const elN = document.getElementById('perfilNombre');
+      if (elN) elN.textContent = nombre || perfil.nombre || '';
+
+      // Especialidad
+      const esp = materias.length > 1
+        ? `${materias[0]} y ${materias.length - 1} más`
+        : (materias[0] || '');
+      const elE = document.getElementById('perfilEspecialidad');
+      if (elE) elE.textContent = esp;
+
+      // Materias tags
+      const elMat = document.getElementById('perfilMaterias');
+      const elSinM = document.getElementById('perfilSinMaterias');
+      if (elMat) {
+        if (materias.length > 0) {
+          elMat.style.display = 'flex';
+          if (elSinM) elSinM.style.display = 'none';
+          elMat.innerHTML = materias.map(m =>
+            `<span style="background:#d1e7dd;color:#0f5132;border-radius:20px;padding:4px 12px;font-size:.82rem;font-weight:500;">${m}</span>`
+          ).join('');
+        } else {
+          elMat.style.display = 'none';
+          if (elSinM) elSinM.style.display = 'block';
+        }
+      }
+
+      // Precio
+      const elP = document.getElementById('perfilPrecio');
+      if (elP) {
+        const p = parseInt(perfil.precio) || 25000;
+        elP.textContent = `$${p.toLocaleString('es-CO')} / hora`;
+      }
+
+      // Descripción
+      const elD = document.getElementById('perfilDesc');
+      if (elD) elD.textContent = perfil.descripcion || 'Sin descripción agregada aún.';
+
+      // Horarios
+      const horarios = (typeof availability !== 'undefined') ? availability : (perfil.horarios || {});
+      const elH = document.getElementById('perfilHorarios');
+      if (elH) {
+        const lineas = Object.entries(horarios)
+          .filter(([, slots]) => slots && slots.length > 0)
+          .map(([dia, slots]) => `<span style="margin-right:8px;"><b>${dia}:</b> ${slots.map(s => `${s.from}–${s.to}`).join(', ')}</span>`);
+        elH.innerHTML = lineas.length
+          ? lineas.join('<br>')
+          : '<span style="color:#aaa;">Aún no has agregado horarios.</span>';
+      }
+    }
+
+    /* ── GUARDAR perfil en Supabase + localStorage ── */
+    async function guardarPerfilPublico() {
+      const usuario = JSON.parse(localStorage.getItem('tutores_usuario') || '{}');
+      const btn = document.querySelector('[onclick="guardarPerfilPublico()"]');
+      const msgEl = document.getElementById('perfilGuardadoMsg');
+
+      const materiasRaw = document.getElementById('editMaterias').value.trim();
+      const precio      = parseInt(document.getElementById('editPrecio').value) || 25000;
+      const descripcion = document.getElementById('editDescripcion').value.trim();
+      const foto        = localStorage.getItem('tutores_avatar') || '';
+      const horarios    = (typeof availability !== 'undefined') ? availability : {};
+      const materias    = materiasRaw ? materiasRaw.split(',').map(m => m.trim()).filter(Boolean) : [];
+
+      const perfil = { nombre: usuario.nombre, materias, precio, descripcion, foto, horarios };
+      localStorage.setItem('tutores_perfil_profesor', JSON.stringify(perfil));
+
+      // Actualizar vista previa inmediatamente
+      actualizarVistaPreviaPerfil(perfil, usuario.nombre);
+
+      if (btn) { btn.disabled = true; btn.textContent = 'Guardando...'; }
+
+      try {
+        // Verificar si ya existe registro
+        const { data: existente } = await supabaseRequest(
+          `/perfiles_profesores?usuario_id=eq.${usuario.id}&select=id`,
+          { method: 'GET', prefer: '' }
+        );
+
+        const payload = {
+          usuario_id:  usuario.id,
+          nombre:      usuario.nombre,
+          email:       usuario.email,
+          materias:    materias.join(', '),
+          precio,
+          descripcion,
+          foto,
+          horarios:    JSON.stringify(horarios),
+          rating:      5.0,
+          resenas:     0
+        };
+
+        let ok, data;
+        if (Array.isArray(existente) && existente.length > 0) {
+          // UPDATE
+          ({ ok, data } = await supabaseRequest(
+            `/perfiles_profesores?usuario_id=eq.${usuario.id}`,
+            { method: 'PATCH', body: JSON.stringify(payload) }
+          ));
+        } else {
+          // INSERT
+          ({ ok, data } = await supabaseRequest(
+            '/perfiles_profesores',
+            { method: 'POST', body: JSON.stringify(payload) }
+          ));
+        }
+
+        if (ok) {
+          if (msgEl) {
+            msgEl.style.cssText = 'display:block;background:#d1e7dd;border:1px solid #198754;color:#0f5132;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px;';
+            msgEl.textContent = '✅ Perfil guardado correctamente';
+            setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+          }
+        } else {
+          throw new Error('Error guardando');
+        }
+      } catch(e) {
+        console.warn('Error Supabase, guardado solo en localStorage');
+        if (msgEl) {
+          msgEl.style.cssText = 'display:block;background:#fff3cd;border:1px solid #ffc107;color:#856404;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px;';
+          msgEl.textContent = '⚠️ Guardado localmente (sin conexión a Supabase)';
+          setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+        }
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-cloud-check me-1"></i> Guardar cambios'; }
+      }
+    }
+
+    /* ── Guardar horarios también en el perfil cuando se agregan ── */
+    const _addHorarioOrig = window.addHorario;
+    window.addHorario = function() {
+      if (_addHorarioOrig) _addHorarioOrig();
+      const perfil = JSON.parse(localStorage.getItem('tutores_perfil_profesor') || '{}');
+      if (typeof availability !== 'undefined') perfil.horarios = availability;
+      localStorage.setItem('tutores_perfil_profesor', JSON.stringify(perfil));
+    };
+
+    /* ── Hook showSection para cargar perfil cuando se navega a esa sección ── */
+    const _showSectionOrig = window.showSection;
+    window.showSection = function(name, el) {
+      const result = _showSectionOrig ? _showSectionOrig(name, el) : false;
+      if (name === 'miperfil')  cargarPerfilPublico();
+      if (name === 'proximas')  cargarSesionesProximas();
+      if (name === 'historial') cargarHistorial();
+      return result;
+    };
+
+    /* ── Carga de reservas desde Supabase ── */
+    async function obtenerReservasProfesor() {
+      const usuario = JSON.parse(localStorage.getItem('tutores_usuario') || '{}');
+      if (!usuario.id) return [];
+      try {
+        const { ok, data } = await supabaseRequest(
+          `/reservas?tutor_id=eq.${usuario.id}&select=*,usuarios(nombre,email)&order=fecha.asc,hora.asc`,
+          { method: 'GET', prefer: '' }
+        );
+        return (ok && Array.isArray(data)) ? data : [];
+      } catch(e) { return []; }
+    }
+
+    const DIAS_ES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const MESES_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+    function formatearFechaReserva(fechaStr) {
+      // fechaStr = "2026-05-20"
+      const [y, m, d] = fechaStr.split('-').map(Number);
+      const fecha = new Date(y, m - 1, d);
+      return `${DIAS_ES[fecha.getDay()]}, ${d} de ${MESES_ES[m-1]} ${y}`;
+    }
+
+    function esProxima(fechaStr) {
+      const [y, m, d] = fechaStr.split('-').map(Number);
+      const hoy = new Date(); hoy.setHours(0,0,0,0);
+      return new Date(y, m-1, d) >= hoy;
+    }
+
+    async function cargarSesionesProximas() {
+      const cont = document.getElementById('proximasContainer');
+      if (!cont) return;
+      const reservas = await obtenerReservasProfesor();
+      const proximas = reservas.filter(r => r.estado !== 'cancelada' && esProxima(r.fecha));
+
+      if (proximas.length === 0) {
+        cont.innerHTML = `<div class="alert alert-info rounded-3 mb-0">No tienes sesiones próximas programadas.</div>`;
+        return;
+      }
+
+      cont.innerHTML = proximas.map(r => {
+        const nombreAlumno = r.usuarios?.nombre || `Alumno #${r.usuario_id}`;
+        const emailAlumno  = r.usuarios?.email  || '';
+        return `
+        <div class="session-card">
+          <div>
+            <p style="font-weight:700;font-size:.93rem;margin-bottom:2px;">
+              <i class="bi bi-person-circle me-1 text-secondary"></i>${nombreAlumno}
+            </p>
+            ${emailAlumno ? `<p style="font-size:.78rem;color:#aaa;margin-bottom:4px;">${emailAlumno}</p>` : ''}
+            <p style="font-size:.82rem;color:#888;margin:0;">
+              ${formatearFechaReserva(r.fecha)} &middot; ${r.hora} &middot;
+              <span class="badge ${r.modalidad === 'virtual' ? 'bg-primary' : 'bg-success'} rounded-pill" style="font-size:.75rem;">
+                ${r.modalidad === 'virtual' ? '🎥 Virtual' : '📍 Presencial'}
+              </span>
+            </p>
+          </div>
+          <div class="d-flex gap-2">
+            ${r.modalidad === 'virtual'
+              ? `<a href="videollamada.html?reserva=${r.id}&tutor=${r.tutor_id}" class="btn btn-success btn-sm rounded-pill px-3">🎥 Iniciar sesión</a>`
+              : `<span class="btn btn-outline-secondary btn-sm rounded-pill px-3 disabled">Presencial</span>`}
+            <button onclick="cancelarReserva(${r.id}, this)" class="btn btn-outline-danger btn-sm rounded-pill px-3">Cancelar</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    async function cargarHistorial() {
+      const cont = document.getElementById('historialContainer');
+      if (!cont) return;
+      const reservas = await obtenerReservasProfesor();
+      const pasadas = reservas.filter(r => !esProxima(r.fecha) || r.estado === 'cancelada');
+
+      if (pasadas.length === 0) {
+        cont.innerHTML = `<div class="alert alert-info rounded-3 mb-0">No hay sesiones en el historial aún.</div>`;
+        return;
+      }
+
+      cont.innerHTML = `
+        <div class="bg-white border rounded-3 overflow-hidden">
+          <table class="table table-striped mb-0">
+            <thead class="table-success">
+              <tr><th>Alumno</th><th>Fecha</th><th>Hora</th><th>Modalidad</th><th>Estado</th></tr>
+            </thead>
+            <tbody>
+              ${pasadas.map(r => {
+                const nombreAlumno = r.usuarios?.nombre || `Alumno #${r.usuario_id}`;
+                return `
+                <tr>
+                  <td>${nombreAlumno}</td>
+                  <td>${r.fecha}</td>
+                  <td>${r.hora}</td>
+                  <td>${r.modalidad === 'virtual' ? '🎥 Virtual' : '📍 Presencial'}</td>
+                  <td><span class="badge ${r.estado === 'cancelada' ? 'bg-danger' : 'bg-secondary'} rounded-pill">${r.estado || 'completada'}</span></td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    async function cancelarReserva(id, btn) {
+      if (!confirm('¿Seguro que deseas cancelar esta sesión?')) return;
+      btn.disabled = true; btn.textContent = 'Cancelando...';
+      try {
+        const { ok } = await supabaseRequest(
+          `/reservas?id=eq.${id}`,
+          { method: 'PATCH', body: JSON.stringify({ estado: 'cancelada' }) }
+        );
+        if (ok) { showToast('Sesión cancelada.', 'success'); cargarSesionesProximas(); }
+        else     { showToast('Error al cancelar.', 'error'); btn.disabled = false; btn.textContent = 'Cancelar'; }
+      } catch { showToast('Error de conexión.', 'error'); btn.disabled = false; btn.textContent = 'Cancelar'; }
+    }
+
+    /* ── Navegación por hash (ej: dashboard.html#miperfil desde navbar) ── */
+    (function() {
+      const hash = window.location.hash.replace('#', '');
+      if (hash) {
+        const link = document.querySelector(`.sidebar-menu a[onclick*="'${hash}'"]`);
+        if (link) showSection(hash, link);
+      }
+    })();
+  </script>
+</body>
+</html>

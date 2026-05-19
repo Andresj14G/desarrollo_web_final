@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Panel | Tutores On-Line</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/styles/estilos.css" />
+  <style>
+    /* ── Stat cards ── */
+    .est-stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      padding: 20px 24px 4px;
+    }
+    @media (max-width: 900px) { .est-stats-row { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 500px) { .est-stats-row { grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 12px 0; } }
+
+    /* ── Reserva card ── */
+    .reserva-card {
+      background: #fff;
+      border: 1.5px solid #e8e8e8;
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: box-shadow .2s, border-color .2s;
+    }
+    .reserva-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,.07); border-color: #198754; }
+
+    .reserva-card.proxima { border-left: 4px solid #198754; }
+    .reserva-card.pasada  { border-left: 4px solid #adb5bd; opacity: .85; }
+    .reserva-card.cancelada-card { border-left: 4px solid #dc3545; opacity: .7; }
+
+    .rv-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      object-fit: cover; border: 2px solid #e0e0e0;
+      flex-shrink: 0;
+      background: #f0f0f0;
+    }
+    .rv-info { flex: 1; min-width: 0; }
+    .rv-tutor-name { font-weight: 700; font-size: .93rem; margin: 0 0 2px; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rv-materia    { font-size: .78rem; color: #198754; font-weight: 500; margin: 0 0 4px; }
+    .rv-meta       { font-size: .78rem; color: #777; margin: 0; }
+
+    .rv-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      border-radius: 20px; padding: 3px 11px;
+      font-size: .73rem; font-weight: 600; white-space: nowrap;
+    }
+    .rv-badge.virtual    { background: #cfe2ff; color: #084298; }
+    .rv-badge.presencial { background: #d1e7dd; color: #0a3622; }
+    .rv-badge.cancelada  { background: #f8d7da; color: #58151c; }
+
+    .rv-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; flex-shrink: 0; }
+
+    /* Botón videollamada */
+    .btn-join {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #198754; color: #fff;
+      border: none; border-radius: 8px;
+      padding: 8px 16px; font-size: .82rem; font-weight: 600;
+      cursor: pointer; white-space: nowrap;
+      transition: background .2s, transform .15s;
+      text-decoration: none;
+    }
+    .btn-join:hover { background: #157347; color: #fff; transform: translateY(-1px); }
+    .btn-join i { font-size: .9rem; }
+
+    .btn-join.presencial-btn {
+      background: #e9ecef; color: #495057;
+      cursor: default; transform: none;
+    }
+    .btn-join.presencial-btn:hover { background: #e9ecef; color: #495057; transform: none; }
+
+    .btn-cancel-rv {
+      font-size: .75rem; color: #dc3545; background: none; border: none;
+      cursor: pointer; padding: 0; font-weight: 500;
+      text-decoration: underline;
+    }
+    .btn-cancel-rv:hover { color: #a71d2a; }
+    .btn-cancel-rv:disabled { opacity: .5; cursor: default; }
+
+    /* ── Sección vacía ── */
+    .empty-state {
+      text-align: center; padding: 48px 20px;
+      color: #aaa;
+    }
+    .empty-state i { font-size: 3rem; display: block; margin-bottom: 12px; color: #d0d0d0; }
+    .empty-state p { font-size: .9rem; margin: 0; }
+
+    /* ── Pestañas de filtro ── */
+    .filter-tabs {
+      display: flex; gap: 8px; padding: 0 24px 16px; flex-wrap: wrap;
+    }
+    .filter-tab {
+      background: #fff; border: 1.5px solid #dee2e6;
+      border-radius: 20px; padding: 5px 16px;
+      font-size: .8rem; font-weight: 500; color: #555;
+      cursor: pointer; transition: all .15s;
+    }
+    .filter-tab.active { background: #198754; border-color: #198754; color: #fff; }
+    .filter-tab:hover:not(.active) { border-color: #198754; color: #198754; }
+
+    /* ── Tabla historial ── */
+    .hist-table th { font-size: .78rem; font-weight: 600; color: #555; }
+    .hist-table td { font-size: .82rem; vertical-align: middle; }
+
+    /* ── Próxima sesión destacada ── */
+    .next-session-banner {
+      margin: 20px 24px 0;
+      background: linear-gradient(135deg, #198754 0%, #20a060 100%);
+      border-radius: 14px;
+      padding: 20px 24px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .next-session-banner h6 { font-size: .76rem; font-weight: 600; opacity: .8; margin: 0 0 4px; text-transform: uppercase; letter-spacing: .5px; }
+    .next-session-banner p  { font-size: 1rem; font-weight: 700; margin: 0; }
+    .next-session-banner small { font-size: .8rem; opacity: .85; }
+
+    .btn-join-banner {
+      background: #fff; color: #198754;
+      border: none; border-radius: 10px;
+      padding: 10px 22px; font-size: .87rem; font-weight: 700;
+      cursor: pointer; white-space: nowrap;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 7px;
+      flex-shrink: 0;
+      transition: background .2s;
+    }
+    .btn-join-banner:hover { background: #e8f5ef; color: #145e3c; }
+
+    /* ── Spinner ── */
+    .loading-rows { padding: 32px 24px; text-align: center; color: #aaa; font-size: .88rem; }
+
+    /* ── Temporizador countdown ── */
+    .countdown-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,.2); border-radius: 8px;
+      padding: 4px 10px; font-size: .78rem; font-weight: 600;
+      margin-top: 6px;
+    }
+
+    /* ── Perfil card ── */
+    .perfil-card {
+      background: #fff; border: 1.5px solid #dee2e6;
+      border-radius: 16px; padding: 28px 24px;
+      max-width: 480px;
+    }
+    .perfil-avatar-big {
+      width: 80px; height: 80px; border-radius: 50%;
+      object-fit: cover; border: 3px solid #198754;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="../index.html">
+        <img src="../assets/images/logo/Logo.png" alt="Tutores On-Line" style="height: 42px; width: auto;" />
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <i class="bi bi-list fs-2 text-secondary"></i>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav align-items-center gap-lg-2 mt-3 mt-lg-0">
+          <li class="nav-item"><a class="nav-link fw-500" href="../index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link fw-500" href="Buscar_tutor.html">Buscar tutor</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ BARRA TÍTULO ══ -->
+  <div class="dash-topbar">
+    <p class="dash-topbar-title">Mi Panel</p>
+    <div class="dash-user">
+      <div class="dash-user-info">
+        <span class="dash-user-name" id="dashNombre">Cargando...</span>
+        <span class="dash-user-sub">Estudiante</span>
+      </div>
+      <img id="dashAvatar"
+           src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Ccircle cx='22' cy='22' r='22' fill='%23e0e0e0'/%3E%3Ccircle cx='22' cy='17' r='8' fill='%23bdbdbd'/%3E%3Cellipse cx='22' cy='36' rx='13' ry='9' fill='%23bdbdbd'/%3E%3C/svg%3E"
+           alt="Avatar" class="dash-avatar" style="object-fit:cover;" />
+    </div>
+  </div>
+
+  <!-- ══ LAYOUT ══ -->
+  <div class="dash-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="dash-sidebar">
+      <ul class="sidebar-menu">
+        <li><a href="#" class="active" onclick="return showSection('proximas', this)">
+          <i class="bi bi-calendar-check"></i><span>Mis clases</span>
+        </a></li>
+        <li><a href="#" onclick="return showSection('historial', this)">
+          <i class="bi bi-clock-history"></i><span>Historial</span>
+        </a></li>
+        <li><a href="#" onclick="return showSection('perfil', this)">
+          <i class="bi bi-person-circle"></i><span>Mi perfil</span>
+        </a></li>
+        <li><a href="Buscar_tutor.html" style="color:#bbb;">
+          <i class="bi bi-search"></i><span>Buscar tutor</span>
+        </a></li>
+        <li style="margin-top:auto;">
+          <a href="#" onclick="cerrarSesion(); return false;" style="color:#f87171!important;">
+            <i class="bi bi-box-arrow-right"></i><span>Cerrar sesión</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="dash-main">
+
+      <!-- ══ SECCIÓN: MIS CLASES (PRÓXIMAS) ══ -->
+      <div id="section-proximas">
+
+        <!-- Stats row -->
+        <div class="est-stats-row" id="statsRow">
+          <div class="stat-card"><p class="stat-num" id="statTotal">–</p><p class="stat-label">Clases totales</p></div>
+          <div class="stat-card"><p class="stat-num" id="statProximas">–</p><p class="stat-label">Próximas</p></div>
+          <div class="stat-card"><p class="stat-num" id="statVirtuales">–</p><p class="stat-label">Virtuales</p></div>
+          <div class="stat-card"><p class="stat-num" id="statPresenciales">–</p><p class="stat-label">Presenciales</p></div>
+        </div>
+
+        <!-- Banner próxima sesión -->
+        <div id="nextBanner" style="display:none;" class="next-session-banner">
+          <div>
+            <h6><i class="bi bi-lightning-charge-fill me-1"></i>Tu próxima clase</h6>
+            <p id="nextBannerTutor">–</p>
+            <small id="nextBannerInfo">–</small>
+            <div id="nextBannerCountdown" class="countdown-chip" style="display:none;">
+              <i class="bi bi-hourglass-split"></i>
+              <span id="nextCountdownText">–</span>
+            </div>
+          </div>
+          <a id="nextBannerBtn" href="videollamada.html" class="btn-join-banner">
+            <i class="bi bi-camera-video-fill"></i> Unirse ahora
+          </a>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filter-tabs" style="margin-top:20px;" id="filterTabs">
+          <button class="filter-tab active" onclick="filtrarReservas('proximas', this)">📅 Próximas</button>
+          <button class="filter-tab" onclick="filtrarReservas('todas', this)">📋 Todas</button>
+          <button class="filter-tab" onclick="filtrarReservas('virtual', this)">🎥 Virtuales</button>
+          <button class="filter-tab" onclick="filtrarReservas('presencial', this)">📍 Presenciales</button>
+        </div>
+
+        <!-- Lista de clases -->
+        <div style="padding: 0 24px 32px;" id="reservasContainer">
+          <div class="loading-rows">
+            <div class="spinner-border spinner-border-sm text-success me-2"></div>
+            Cargando tus clases...
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SECCIÓN: HISTORIAL ══ -->
+      <div id="section-historial" class="d-none other-sec">
+        <h5>Historial de clases</h5>
+        <p class="text-muted mb-4" style="font-size:.85rem;">Clases pasadas y canceladas.</p>
+        <div id="historialContainer">
+          <div class="loading-rows">
+            <div class="spinner-border spinner-border-sm text-success me-2"></div>
+            Cargando historial...
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SECCIÓN: PERFIL ══ -->
+      <div id="section-perfil" class="d-none other-sec">
+        <h5>Mi perfil</h5>
+        <div class="perfil-card">
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <img id="perfilAvatarBig"
+                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='40' fill='%23e0e0e0'/%3E%3Ccircle cx='40' cy='30' r='14' fill='%23bdbdbd'/%3E%3Cellipse cx='40' cy='64' rx='23' ry='16' fill='%23bdbdbd'/%3E%3C/svg%3E'%0A"
+                 class="perfil-avatar-big" alt="Avatar" />
+            <div>
+              <p id="perfilNombreEl" style="font-weight:700;font-size:1.1rem;margin:0;"></p>
+              <p id="perfilEmailEl"  style="color:#888;font-size:.85rem;margin:4px 0 0;"></p>
+              <span class="rv-badge presencial mt-2" style="display:inline-flex;">
+                <i class="bi bi-mortarboard-fill"></i> Estudiante
+              </span>
+            </div>
+          </div>
+          <hr style="border-color:#f0f0f0;" />
+          <div class="row g-3 mt-1">
+            <div class="col-6">
+              <p style="font-size:.75rem;color:#aaa;margin:0 0 2px;font-weight:600;text-transform:uppercase;">Clases reservadas</p>
+              <p id="perfilStatTotal" style="font-size:1.5rem;font-weight:800;color:#198754;margin:0;">–</p>
+            </div>
+            <div class="col-6">
+              <p style="font-size:.75rem;color:#aaa;margin:0 0 2px;font-weight:600;text-transform:uppercase;">Clases próximas</p>
+              <p id="perfilStatProx"  style="font-size:1.5rem;font-weight:800;color:#198754;margin:0;">–</p>
+            </div>
+          </div>
+          <hr style="border-color:#f0f0f0;" />
+          <a href="Buscar_tutor.html" class="btn btn-success w-100 rounded-pill mt-2" style="font-size:.88rem;">
+            <i class="bi bi-search me-1"></i> Reservar una nueva clase
+          </a>
+          <button onclick="cerrarSesion()" class="btn btn-outline-danger w-100 rounded-pill mt-2" style="font-size:.88rem;">
+            <i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión
+          </button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ══ MODAL CANCELAR ══ -->
+  <div class="modal fade" id="modalCancelar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+        <div class="modal-body text-center py-4">
+          <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size:2rem;"></i>
+          <p class="fw-bold mt-3 mb-1">¿Cancelar esta clase?</p>
+          <p class="text-muted" style="font-size:.85rem;">Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0 justify-content-center gap-2">
+          <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">No, mantener</button>
+          <button id="btnConfirmarCancelacion" class="btn btn-danger rounded-pill px-4">Sí, cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/app.js"></script>
+  <script src="../assets/api.js"></script>
+
+  <script>
+    /* ════════════════════════════════════════════════════
+       DASHBOARD ESTUDIANTE
+       ════════════════════════════════════════════════════ */
+
+    const SUPABASE_URL_EST = 'https://dzrgyxqzacnhqbkkdskj.supabase.co';
+    const SUPABASE_KEY_EST = 'sb_publishable_YmqZU6pgjkLVCLZONTKD2Q_9rfcSAgP';
+
+    const MESES_ES  = ['enero','febrero','marzo','abril','mayo','junio',
+                       'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const DIAS_ES   = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+    /* ── helpers ── */
+    function esFechaProxima(fechaStr) {
+      const [y, m, d] = fechaStr.split('-').map(Number);
+      const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+      return new Date(y, m - 1, d) >= hoy;
+    }
+
+    function formatFecha(fechaStr) {
+      const [y, m, d] = fechaStr.split('-').map(Number);
+      const fecha = new Date(y, m - 1, d);
+      return `${DIAS_ES[fecha.getDay()]}, ${d} de ${MESES_ES[m - 1]} ${y}`;
+    }
+
+    function tiempoHasta(fechaStr, horaStr) {
+      const [y, m, d]   = fechaStr.split('-').map(Number);
+      const [hh, mm]    = horaStr.split(':').map(Number);
+      const objetivo    = new Date(y, m - 1, d, hh, mm, 0);
+      const diffMs      = objetivo - Date.now();
+      if (diffMs <= 0) return null;
+      const dias  = Math.floor(diffMs / 86400000);
+      const horas = Math.floor((diffMs % 86400000) / 3600000);
+      const mins  = Math.floor((diffMs % 3600000)  / 60000);
+      if (dias > 0)  return `En ${dias} día${dias > 1 ? 's' : ''} y ${horas}h`;
+      if (horas > 0) return `En ${horas}h ${mins}min`;
+      return `En ${mins} minuto${mins !== 1 ? 's' : ''}`;
+    }
+
+    function avatarPlaceholder() {
+      return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46' viewBox='0 0 46 46'%3E%3Ccircle cx='23' cy='23' r='23' fill='%23e0e0e0'/%3E%3Ccircle cx='23' cy='17' r='9' fill='%23bdbdbd'/%3E%3Cellipse cx='23' cy='38' rx='14' ry='10' fill='%23bdbdbd'/%3E%3C/svg%3E";
+    }
+
+    /* ── Cargar usuario ── */
+    const usuario = (() => {
+      try { return JSON.parse(localStorage.getItem('tutores_usuario') || 'null'); }
+      catch { return null; }
+    })();
+
+    if (!usuario) { window.location.href = 'login.html'; }
+
+    document.getElementById('dashNombre').textContent = usuario?.nombre || 'Estudiante';
+    document.getElementById('perfilNombreEl').textContent = usuario?.nombre || '';
+    document.getElementById('perfilEmailEl').textContent  = usuario?.email  || '';
+
+    /* ── Supabase fetch ── */
+    async function sbFetch(path, opts = {}) {
+      const res  = await fetch(`${SUPABASE_URL_EST}/rest/v1${path}`, {
+        ...opts,
+        headers: {
+          'apikey':        SUPABASE_KEY_EST,
+          'Authorization': `Bearer ${SUPABASE_KEY_EST}`,
+          'Content-Type':  'application/json',
+          'Prefer':        opts.prefer ?? 'return=representation',
+          ...(opts.headers || {})
+        }
+      });
+      const text = await res.text();
+      return { ok: res.ok, data: text ? JSON.parse(text) : {} };
+    }
+
+    /* ── Estado global de reservas ── */
+    let todasLasReservas = [];
+    let filtroActivo     = 'proximas';
+
+    /* ── Cargar reservas desde Supabase ── */
+    async function cargarReservas() {
+      if (!usuario?.id) return;
+      try {
+        const { ok, data } = await sbFetch(
+          `/reservas?usuario_id=eq.${usuario.id}&select=*&order=fecha.asc,hora.asc`,
+          { method: 'GET', prefer: '' }
+        );
+        if (ok && Array.isArray(data)) {
+          todasLasReservas = data;
+        }
+      } catch(e) {
+        console.warn('Error cargando reservas:', e);
+        todasLasReservas = [];
+      }
+      actualizarStats();
+      await renderReservas(filtroActivo);
+      renderBannerProxima();
+    }
+
+    /* ── Cargar perfiles de profesores para enricher los datos ── */
+    let cacheProfesores = {};
+
+    async function cargarPerfilesProfesores(tutorIds) {
+      const ids = [...new Set(tutorIds)].filter(id => id && !cacheProfesores[id]);
+      if (!ids.length) return;
+      try {
+        const { ok, data } = await sbFetch(
+          `/perfiles_profesores?usuario_id=in.(${ids.join(',')})&select=usuario_id,nombre,foto,materias`,
+          { method: 'GET', prefer: '' }
+        );
+        if (ok && Array.isArray(data)) {
+          data.forEach(p => { cacheProfesores[p.usuario_id] = p; });
+        }
+      } catch(e) { /* si falla, usamos datos genéricos */ }
+    }
+
+    /* ── Stats ── */
+    function actualizarStats() {
+      const total       = todasLasReservas.length;
+      const proximas    = todasLasReservas.filter(r => r.estado !== 'cancelada' && esFechaProxima(r.fecha)).length;
+      const virtuales   = todasLasReservas.filter(r => r.modalidad === 'virtual').length;
+      const presenciales= todasLasReservas.filter(r => r.modalidad === 'presencial').length;
+
+      document.getElementById('statTotal').textContent      = total;
+      document.getElementById('statProximas').textContent   = proximas;
+      document.getElementById('statVirtuales').textContent  = virtuales;
+      document.getElementById('statPresenciales').textContent = presenciales;
+
+      // Perfil stats
+      document.getElementById('perfilStatTotal').textContent = total;
+      document.getElementById('perfilStatProx').textContent  = proximas;
+    }
+
+    /* ── Banner próxima sesión ── */
+    function renderBannerProxima() {
+      const proximas = todasLasReservas.filter(
+        r => r.estado !== 'cancelada' && esFechaProxima(r.fecha)
+      );
+      const banner = document.getElementById('nextBanner');
+      if (!proximas.length) { banner.style.display = 'none'; return; }
+
+      const siguiente = proximas[0];
+      const profesor  = cacheProfesores[siguiente.tutor_id];
+      const nombreTutor = profesor?.nombre || `Tutor #${siguiente.tutor_id}`;
+      const materias    = profesor?.materias?.split(',')[0]?.trim() || '';
+
+      document.getElementById('nextBannerTutor').textContent =
+        `${nombreTutor}${materias ? ' · ' + materias : ''}`;
+      document.getElementById('nextBannerInfo').textContent =
+        `${formatFecha(siguiente.fecha)} · ${siguiente.hora} · ${siguiente.modalidad === 'virtual' ? '🎥 Virtual' : '📍 Presencial'}`;
+
+      // Countdown
+      const t = tiempoHasta(siguiente.fecha, siguiente.hora);
+      if (t) {
+        document.getElementById('nextCountdownText').textContent = t;
+        document.getElementById('nextBannerCountdown').style.display = 'inline-flex';
+      }
+
+      // Botón unirse
+      const btnBanner = document.getElementById('nextBannerBtn');
+      if (siguiente.modalidad === 'presencial') {
+        btnBanner.style.display = 'none';
+      } else {
+        btnBanner.style.display = 'inline-flex';
+        btnBanner.href = `videollamada.html?reserva=${siguiente.id}&tutor=${siguiente.tutor_id}`;
+      }
+
+      banner.style.display = 'flex';
+    }
+
+    /* ── Filtrar reservas ── */
+    function filtrarReservas(tipo, btn) {
+      filtroActivo = tipo;
+      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderReservas(tipo);
+    }
+
+    /* ── Render lista de reservas ── */
+    async function renderReservas(filtro) {
+      const cont = document.getElementById('reservasContainer');
+
+      let lista = [...todasLasReservas];
+
+      switch (filtro) {
+        case 'proximas':
+          lista = lista.filter(r => r.estado !== 'cancelada' && esFechaProxima(r.fecha));
+          break;
+        case 'virtual':
+          lista = lista.filter(r => r.modalidad === 'virtual' && r.estado !== 'cancelada');
+          break;
+        case 'presencial':
+          lista = lista.filter(r => r.modalidad === 'presencial' && r.estado !== 'cancelada');
+          break;
+        // 'todas' → sin filtro adicional
+      }
+
+      if (!lista.length) {
+        cont.innerHTML = `
+          <div class="empty-state">
+            <i class="bi bi-calendar-x"></i>
+            <p>${
+              filtro === 'proximas'
+                ? 'No tienes clases próximas. <a href="Buscar_tutor.html" class="text-success">Reserva una clase ahora.</a>'
+                : 'No hay clases en esta categoría.'
+            }</p>
+          </div>`;
+        return;
+      }
+
+      // Cargar perfiles de profesores que faltan
+      await cargarPerfilesProfesores(lista.map(r => r.tutor_id));
+
+      cont.innerHTML = lista.map(r => buildReservaCard(r)).join('');
+    }
+
+    /* ── Construir HTML de una card de reserva ── */
+    function buildReservaCard(r) {
+      const hoy     = new Date(); hoy.setHours(0,0,0,0);
+      const esProx  = esFechaProxima(r.fecha) && r.estado !== 'cancelada';
+      const esCan   = r.estado === 'cancelada';
+
+      const profesor    = cacheProfesores[r.tutor_id];
+      const nombreTutor = profesor?.nombre  || `Tutor #${r.tutor_id}`;
+      const fotoTutor   = profesor?.foto    || avatarPlaceholder();
+      const materias    = profesor?.materias?.split(',')[0]?.trim() || 'Tutoría';
+
+      const claseCard = esCan ? 'cancelada-card' : (esProx ? 'proxima' : 'pasada');
+
+      // Badge modalidad / estado
+      let badge = '';
+      if (esCan) {
+        badge = `<span class="rv-badge cancelada"><i class="bi bi-x-circle me-1"></i>Cancelada</span>`;
+      } else if (r.modalidad === 'virtual') {
+        badge = `<span class="rv-badge virtual"><i class="bi bi-camera-video-fill me-1"></i>Virtual</span>`;
+      } else {
+        badge = `<span class="rv-badge presencial"><i class="bi bi-geo-alt-fill me-1"></i>Presencial</span>`;
+      }
+
+      // Botón acción
+      let accion = '';
+      if (esCan) {
+        accion = `<span style="font-size:.75rem;color:#aaa;">Cancelada</span>`;
+      } else if (!esProx) {
+        accion = `<span style="font-size:.75rem;color:#aaa;">Clase pasada</span>`;
+      } else if (r.modalidad === 'virtual') {
+        accion = `
+          <a href="videollamada.html?reserva=${r.id}&tutor=${r.tutor_id}"
+             class="btn-join">
+            <i class="bi bi-camera-video-fill"></i> Unirse
+          </a>`;
+      } else {
+        accion = `
+          <a class="btn-join presencial-btn">
+            <i class="bi bi-geo-alt-fill"></i> Presencial
+          </a>`;
+      }
+
+      // Botón cancelar (solo si es próxima)
+      const btnCancelar = (esProx && !esCan)
+        ? `<button class="btn-cancel-rv" onclick="pedirCancelar(${r.id})">Cancelar clase</button>`
+        : '';
+
+      return `
+        <div class="reserva-card ${claseCard}" id="rv-${r.id}">
+          <img src="${fotoTutor}" class="rv-avatar"
+               onerror="this.src='${avatarPlaceholder()}'" alt="${nombreTutor}" />
+          <div class="rv-info">
+            <p class="rv-tutor-name">${nombreTutor}</p>
+            <p class="rv-materia">${materias}</p>
+            <p class="rv-meta">
+              ${formatFecha(r.fecha)} &middot; ${r.hora}
+              &nbsp;${badge}
+            </p>
+          </div>
+          <div class="rv-actions">
+            ${accion}
+            ${btnCancelar}
+          </div>
+        </div>`;
+    }
+
+    /* ── Cancelar reserva ── */
+    let reservaACancelar = null;
+    const modalCancelar  = new bootstrap.Modal(document.getElementById('modalCancelar'));
+
+    function pedirCancelar(id) {
+      reservaACancelar = id;
+      modalCancelar.show();
+    }
+
+    document.getElementById('btnConfirmarCancelacion').addEventListener('click', async () => {
+      if (!reservaACancelar) return;
+      const btn = document.getElementById('btnConfirmarCancelacion');
+      btn.disabled = true; btn.textContent = 'Cancelando...';
+
+      try {
+        const { ok } = await sbFetch(
+          `/reservas?id=eq.${reservaACancelar}`,
+          { method: 'PATCH', body: JSON.stringify({ estado: 'cancelada' }), prefer: 'return=minimal' }
+        );
+        if (ok) {
+          // Actualizar en memoria
+          const idx = todasLasReservas.findIndex(r => r.id === reservaACancelar);
+          if (idx !== -1) todasLasReservas[idx].estado = 'cancelada';
+          showToast('Clase cancelada correctamente.', 'success');
+          actualizarStats();
+          renderReservas(filtroActivo);
+          renderBannerProxima();
+        } else {
+          showToast('Error al cancelar. Intenta de nuevo.', 'error');
+        }
+      } catch(e) {
+        showToast('Error de conexión.', 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Sí, cancelar';
+        modalCancelar.hide();
+        reservaACancelar = null;
+      }
+    });
+
+    /* ── Historial ── */
+    async function cargarHistorial() {
+      const cont = document.getElementById('historialContainer');
+
+      const pasadas = todasLasReservas.filter(r =>
+        !esFechaProxima(r.fecha) || r.estado === 'cancelada'
+      );
+
+      if (!pasadas.length) {
+        cont.innerHTML = `
+          <div class="empty-state">
+            <i class="bi bi-clock-history"></i>
+            <p>Aún no tienes clases en el historial.</p>
+          </div>`;
+        return;
+      }
+
+      await cargarPerfilesProfesores(pasadas.map(r => r.tutor_id));
+
+      cont.innerHTML = `
+        <div class="bg-white border rounded-3 overflow-hidden">
+          <table class="table table-striped mb-0 hist-table">
+            <thead class="table-success">
+              <tr>
+                <th>Profesor</th>
+                <th>Materia</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Modalidad</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${pasadas.map(r => {
+                const p = cacheProfesores[r.tutor_id];
+                const nombre   = p?.nombre  || `Tutor #${r.tutor_id}`;
+                const materia  = p?.materias?.split(',')[0]?.trim() || '–';
+                const estadoBadge = r.estado === 'cancelada'
+                  ? '<span class="badge bg-danger rounded-pill">Cancelada</span>'
+                  : '<span class="badge bg-secondary rounded-pill">Completada</span>';
+                return `
+                  <tr>
+                    <td>${nombre}</td>
+                    <td>${materia}</td>
+                    <td style="white-space:nowrap;">${r.fecha}</td>
+                    <td>${r.hora}</td>
+                    <td>${r.modalidad === 'virtual' ? '🎥 Virtual' : '📍 Presencial'}</td>
+                    <td>${estadoBadge}</td>
+                  </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    /* ── Navegación de secciones ── */
+    function showSection(name, el) {
+      document.querySelectorAll('[id^="section-"]').forEach(s => s.classList.add('d-none'));
+      document.getElementById('section-' + name)?.classList.remove('d-none');
+      document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+      if (el) el.classList.add('active');
+
+      if (name === 'historial') cargarHistorial();
+      return false;
+    }
+
+    /* ── Inicializar ── */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Guardia: solo alumnos
+      if (usuario?.rol === 'profesor') {
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      cargarReservas();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutores On-Line | Tu guía para aprender</title>
+  <link rel="icon" href="assets/images/logo/Logo.png" type="image/x-icon" />
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="assets/styles/estilos.css" />
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="assets/images/logo/Logo.png" alt="Tutores On-Line" style="height: 42px; width: auto;" />
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <i class="bi bi-list fs-2 text-secondary"></i>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav align-items-center gap-1 -lg-2 mt-3 mt-lg-0">
+          <li class="nav-item"><a class="nav-link fw-500" href="index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link fw-500" href="pages/Buscar_tutor.html">Buscar profesor</a></li>
+          <li class="nav-item"><a class="btn btn-outline-success rounded-pill px-3" href="pages/Login.html">Iniciar sesión</a></li>
+          <li class="nav-item"><a class="btn btn-success rounded-pill px-3 text-white" href="pages/Registro.html">Registrarse</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero-section">
+    <div class="container hero-container">
+      <div class="hero-content">
+        <h1 class="hero-title">Encuentra el tutor ideal para mejorar tus resultados académicos</h1>
+        <p class="hero-subtitle">Clases personalizadas online o presenciales en minutos. Aprende a tu ritmo con profesores verificados.</p>
+        <p class="hero-label">Empieza hoy mismo:</p>
+        <div class="hero-search d-flex flex-column flex-sm-row gap-2">
+          <input type="text" id="heroSearchInput" class="form-control hero-input" placeholder="¿Qué materia quieres aprender?" />
+          <button onclick="heroSearch()" class="btn btn-success btn-hero px-4">Buscar tutor</button>
+        </div>
+        <p class="hero-terms">Al continuar aceptas nuestros <a href="#">Términos de Servicio</a> y <a href="#">Política de Privacidad</a>.</p>
+      </div>
+      <div class="hero-photos d-none d-md-grid">
+        <div class="photo-grid">
+          <img src="assets/images/Profesores/profesor1.jpeg" class="photo-item" alt="tutor" />
+          <img src="assets/images/Profesores/profesor2.jpeg" class="photo-item" alt="tutor" />
+          <img src="assets/images/Profesores/Profesor3.jpeg" class="photo-item photo-half" alt="tutor" />
+          <img src="assets/images/Profesores/profesor4.jpeg" class="photo-item photo-half" alt="tutor" />
+          <img src="assets/images/Profesores/profesor5.png" class="photo-item" alt="tutor" />
+          <img src="assets/images/Profesores/profesor6.jpg" class="photo-item" alt="tutor" />
+          <img src="assets/images/Profesores/profesor7.jpg" class="photo-item photo-half" alt="tutor" />
+          <img src="assets/images/Profesores/profesor8.webp" class="photo-item photo-half" alt="tutor" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BADGES ===== -->
+  <section class="badges-section py-5">
+    <div class="container">
+      <div class="row g-3 justify-content-center text-center">
+        <div class="col-12 col-sm-4">
+          <div class="badge-card">
+            <i class="bi bi-mortarboard badge-icon"></i>
+            <p class="badge-label">Profesores de universidades top</p>
+          </div>
+        </div>
+        <div class="col-12 col-sm-4">
+          <div class="badge-card">
+            <i class="bi bi-patch-check badge-icon"></i>
+            <p class="badge-label">Garantía de satisfacción total</p>
+          </div>
+        </div>
+        <div class="col-12 col-sm-4">
+          <div class="badge-card">
+            <i class="bi bi-people badge-icon"></i>
+            <p class="badge-label">Miles de estudiantes aprendiendo</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STEPS ===== -->
+  <section class="steps-section py-5">
+    <div class="container text-center">
+      <h2 class="section-title">Tu camino al éxito académico</h2>
+      <p class="section-subtitle">Tres simples pasos para conectar con el mentor ideal<br class="d-none d-md-block" /> y transformar tus resultados.</p>
+      <div class="row g-4 mt-4 justify-content-center">
+        <div class="col-12 col-md-4">
+          <div class="step-card">
+            <div class="step-icon step-icon-blue"><i class="bi bi-search fs-3"></i></div>
+            <h5 class="step-title">1. Explora</h5>
+            <p class="step-desc">Filtra por materia, nivel y ubicación para encontrar tu match perfecto.</p>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="step-card">
+            <div class="step-icon step-icon-green"><i class="bi bi-calendar-check fs-3"></i></div>
+            <h5 class="step-title">2. Reserva</h5>
+            <p class="step-desc">Elige el horario que mejor se adapte a tu rutina. Sin complicaciones.</p>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="step-card">
+            <div class="step-icon step-icon-blue"><i class="bi bi-camera-video fs-3"></i></div>
+            <h5 class="step-title">3. Aprende</h5>
+            <p class="step-desc">Conéctate a tu aula virtual o reúnete presencialmente y empieza a mejorar.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SUBJECTS ===== -->
+  <section class="subjects-section py-5">
+    <div class="container">
+      <div class="d-flex align-items-start align-items-sm-center justify-content-between flex-column flex-sm-row gap-3 mb-4">
+        <div>
+          <h2 class="section-title mb-1">Materias más solicitadas</h2>
+          <p class="section-subtitle mb-0">Explora las áreas de conocimiento con mayor demanda.</p>
+        </div>
+        <a href="pages/Buscar_tutor.html" class="btn btn-outline-success rounded-pill px-4 flex-shrink-0">Ver todas las materias</a>
+      </div>
+      <div class="row g-4">
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="subject-card">
+            <img src="assets/images/Materias/matematicas.jpg" alt="Matematicas" class="subject-img" />
+            <div class="subject-body">
+              <span class="subject-num">01/</span>
+              <h5 class="subject-name">MATEMATICAS</h5>
+              <p class="subject-desc">Estudio de los números, las formas, las estructuras y el cambio. Incluye álgebra, geometría y cálculo.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="subject-card">
+            <img src="assets/images/Materias/ESPAÑOL.png" alt="Lenguaje" class="subject-img" />
+            <div class="subject-body">
+              <span class="subject-num">02/</span>
+              <h5 class="subject-name">LENGUAJE</h5>
+              <p class="subject-desc">Análisis del idioma español, gramática, ortografía y estudio de obras literarias clásicas y contemporáneas.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="subject-card">
+            <img src="assets/images/Materias/CIENCIAS.png" alt="Ciencias" class="subject-img" />
+            <div class="subject-body">
+              <span class="subject-num">03/</span>
+              <h5 class="subject-name">CIENCIAS NATURALES</h5>
+              <p class="subject-desc">Exploración del mundo natural a través de la biología, física, química y geología.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="subject-card">
+            <img src="assets/images/Materias/hISTORIA.jpg" alt="Historia" class="subject-img" />
+            <div class="subject-body">
+              <span class="subject-num">04/</span>
+              <h5 class="subject-name">HISTORIA</h5>
+              <p class="subject-desc">Estudio de los eventos pasados, sus causas y consecuencias, y su impacto en el presente.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="subject-card">
+            <img src="assets/images/Materias/ingles.webp" alt="Inglés" class="subject-img" />
+            <div class="subject-body">
+              <span class="subject-num">05/</span>
+              <h5 class="subject-name">INGLÉS</h5>
+              <p class="subject-desc">Aprendizaje del idioma inglés, incluyendo gramática, vocabulario, conversación y comprensión lectora.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="subject-card">
+            <img src="assets/images/Materias/Programacion.jpg" alt="Programacion" class="subject-img" />
+            <div class="subject-body">
+              <span class="subject-num">06/</span>
+              <h5 class="subject-name">PROGRAMACIÓN</h5>
+              <p class="subject-desc">Introducción a los fundamentos de la programación, algoritmos y desarrollo de software en diferentes lenguajes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="testimonials-section py-5">
+    <div class="container">
+      <h2 class="section-title text-center mb-4">Testimonios</h2>
+      <div class="row g-4 justify-content-center">
+        <div class="col-12 col-md-4">
+          <div class="testimonial-card">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="avatar-placeholder"></div>
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+            </div>
+            <p class="testimonial-text">"Encontré un tutor de matemáticas muy rápido y las clases me ayudaron mucho a entender temas que antes me parecían difíciles."</p>
+            <p class="testimonial-author">Andres Campo</p>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="testimonial-card">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="avatar-placeholder"></div>
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+            </div>
+            <p class="testimonial-text">"La plataforma es muy fácil de usar. Pude reservar una tutoría de inglés en pocos minutos y el profesor fue excelente."</p>
+            <p class="testimonial-author">Jesus Cuentas</p>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="testimonial-card">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="avatar-placeholder"></div>
+              <div class="stars">⭐⭐⭐⭐⭐</div>
+            </div>
+            <p class="testimonial-text">"Me gusta que puedo ver las calificaciones y comentarios de otros estudiantes antes de elegir un tutor. Eso me dio mucha confianza."</p>
+            <p class="testimonial-author">Jesus Bohorquez</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="cta-section py-5 text-white text-center">
+    <div class="container">
+      <h2 class="cta-title">¿Listo para alcanzar tu máximo potencial?</h2>
+      <p class="cta-subtitle">Únete a miles de estudiantes y tutores que ya forman parte de nuestra comunidad educativa.</p>
+      <a href="pages/registro.html" class="btn btn-outline-light rounded-pill px-5 py-2 mt-2">Comenzar ahora</a>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer-section py-5">
+    <div class="container">
+      <div class="row align-items-center mb-4">
+        <div class="col-12 col-md-6 mb-3 mb-md-0">
+          <span class="logo-text">
+            <span class="logo-tutores">Tutores</span>
+            <span class="logo-online"> On-Line</span>
+          </span>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="d-flex gap-2">
+            <input type="email" class="form-control footer-input" placeholder="Introduce tu gmail para notificaciones" />
+            <button class="btn btn-success px-3">Subscribe</button>
+          </div>
+        </div>
+      </div>
+      <hr class="footer-hr" />
+      <div class="row g-4 mt-1">
+        <div class="col-6 col-lg-3">
+          <h6 class="footer-heading">Plataforma</h6>
+          <ul class="footer-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="pages/Buscar_tutor.html">Buscar tutor</a></li>
+            <li><a href="#">Como funciona</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-lg-3">
+          <h6 class="footer-heading">Soporte</h6>
+          <ul class="footer-links">
+            <li><a href="pages/Preguntas_frecuentes.html">Preguntas frecuentes</a></li>
+            <li><a href="pages/Contacto.html">Contacto</a></li>
+            <li><a href="pages/Centro_de_ayuda.html">Centro de ayuda</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-lg-3">
+          <h6 class="footer-heading">Legal</h6>
+          <ul class="footer-links">
+            <li><a href="#">Términos de servicio</a></li>
+            <li><a href="#">Política de privacidad</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-lg-3">
+          <h6 class="footer-heading">Únete a nosotros</h6>
+          <div class="social-icons">
+            <a href="#"><i class="bi bi-youtube"></i></a>
+            <a href="#"><i class="bi bi-facebook"></i></a>
+            <a href="#"><i class="bi bi-twitter-x"></i></a>
+            <a href="#"><i class="bi bi-instagram"></i></a>
+            <a href="#"><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+      <hr class="footer-hr mt-4" />
+      <p class="footer-copy text-center mb-0">@ 2026 Tutores On-Line, ¡Aprende con los mejores!</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/api.js"></script>
+</body>
+</html>
